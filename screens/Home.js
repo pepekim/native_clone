@@ -1,4 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
+import {NavigationContainer} from '@react-navigation/native';
 import React, {useState} from 'react';
 import {
   SafeAreaView,
@@ -13,13 +14,32 @@ import {color} from 'react-native-reanimated';
 
 import {icons, images, SIZES, COLORS, FONTS} from '../constants';
 
-const Home = () => {
+const Home = ({navigation}) => {
   const [categories, setCategories] = useState(categoryData);
   const [selectedCategory, setSelectedCategory] = useState({});
   const [restaurants, setRestaurants] = useState(restaurantData);
   const [currentLocation, setCurrentLocation] = useState(
     initialCurrentLocation,
   );
+
+  const onSelectCategory = (category) => {
+    // filter Restaurant
+    let restaurantList = restaurantData.filter((a) =>
+      a.categories.includes(category.id),
+    );
+
+    setRestaurants(restaurantList);
+    setSelectedCategory(category);
+  };
+
+  const getCategoryNameById = (id) => {
+    let category = categories.filter((a) => a.id == id);
+
+    if (category.length > 0) {
+      return category[0].name;
+    }
+    return '';
+  };
 
   const renderHeader = () => {
     return (
@@ -75,23 +95,13 @@ const Home = () => {
 
   const renderMainCategories = () => {
     const renderItem = ({item}) => {
-      const onSelectCategory = (category) => {
-        // filter Restaurant
-        const restaurantList = restaurantData.filter((a) =>
-          a.categories.includes(category.id),
-        );
-
-        setRestaurants(restaurantList);
-        setSelectedCategory(category);
-      };
-
       return (
         <TouchableOpacity
           style={{
             padding: SIZES.padding,
             paddingBottom: SIZES.padding * 2,
             backgroundColor:
-              selectedCategory?.id == item.id ? COLORS.primary : COLORS.white,
+              selectedCategory?.id === item.id ? COLORS.primary : COLORS.white,
             borderRadius: SIZES.radius,
             alignItems: 'center',
             justifyContent: 'center',
@@ -107,7 +117,7 @@ const Home = () => {
               alignItems: 'center',
               justifyContent: 'center',
               backgroundColor:
-                selectedCategory?.id == item.id
+                selectedCategory?.id === item.id
                   ? COLORS.white
                   : COLORS.lightGray,
             }}>
@@ -124,7 +134,7 @@ const Home = () => {
             style={{
               marginTop: SIZES.padding,
               color:
-                selectedCategory?.id == item.id ? COLORS.white : COLORS.black,
+                selectedCategory?.id === item.id ? COLORS.white : COLORS.black,
               ...FONTS.body5,
             }}>
             {item.name}
@@ -141,9 +151,98 @@ const Home = () => {
           data={categories}
           horizontal={true}
           showsHorizontalScrollIndicator={false}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => `${item.id}`}
           renderItem={renderItem}
           contentContainerStyle={{paddingVertical: SIZES.padding * 2}}
+        />
+      </View>
+    );
+  };
+
+  const renderRestaurantList = () => {
+    const renderItem = ({item}) => {
+      return (
+        <TouchableOpacity
+          style={{margin: SIZES.padding * 2}}
+          onPress={() =>
+            navigation.navigate('Restaurant', {
+              item,
+              currentLocation,
+            })
+          }>
+          <View sytle={{marginBottom: SIZES.padding}}>
+            <Image
+              source={item.photo}
+              resizeMode="cover"
+              style={{
+                width: '100%',
+                height: 200,
+                borderRadius: SIZES.radius,
+              }}
+            />
+            <View
+              style={{
+                position: 'absolute',
+                bottom: 0,
+                height: 50,
+                width: SIZES.width * 0.3,
+                backgroundColor: COLORS.white,
+                borderTopRightRadius: SIZES.radius,
+                borderBottomLeftRadius: SIZES.radius,
+                justifyContent: 'center',
+                alignItems: 'center',
+                ...styles.shadow,
+              }}>
+              <Text style={{...FONTS.h4}}>{item.duration}</Text>
+            </View>
+          </View>
+          <Text style={{...FONTS.body2}}>{item.name}</Text>
+          <View style={{marginTop: SIZES.padding, flexDirection: 'row'}}>
+            <Image
+              source={icons.star}
+              style={{
+                width: 20,
+                height: 20,
+                tintColor: COLORS.primary,
+                marginRight: 10,
+              }}
+            />
+            <Text {...FONTS.body3}>{item.rating}</Text>
+            <View style={{flexDirection: 'row', marginLeft: 10}}>
+              {item.categories.map((categoryId) => {
+                return (
+                  <View style={{flexDirection: 'row'}} key={categoryId}>
+                    <Text style={{...FONTS.body3}}>
+                      {getCategoryNameById(categoryId)}
+                    </Text>
+                    <Text style={{...FONTS.h3, color: COLORS.darkgray}}>.</Text>
+                  </View>
+                );
+              })}
+              {[1, 2, 3].map((priceRating) => {
+                <Text
+                  key={priceRating}
+                  style={{
+                    ...FONTS.body3,
+                  }}>
+                  $
+                </Text>;
+              })}
+            </View>
+          </View>
+        </TouchableOpacity>
+      );
+    };
+    return (
+      <View>
+        <FlatList
+          data={restaurants}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+          contentContainerStyle={{
+            paddingHorizontal: SIZES.padding * 2,
+            paddingBottom: 30,
+          }}
         />
       </View>
     );
@@ -153,12 +252,13 @@ const Home = () => {
     <SafeAreaView style={styles.container}>
       {renderHeader()}
       {renderMainCategories()}
+      {renderRestaurantList()}
     </SafeAreaView>
   );
 };
 
 const initialCurrentLocation = {
-  streetName: 'Kuching',
+  streetName: '의문의 코딩공장',
   gps: {
     latitude: 1.5496614931250685,
     longitude: 110.36381866919922,
@@ -168,13 +268,13 @@ const initialCurrentLocation = {
 const categoryData = [
   {
     id: 1,
-    name: 'Rice',
-    icon: icons.rice_bowl,
+    name: 'Burgers',
+    icon: icons.hamburger,
   },
   {
     id: 2,
-    name: 'Noodles',
-    icon: icons.noodle,
+    name: 'Pizza',
+    icon: icons.pizza,
   },
   {
     id: 3,
@@ -183,38 +283,18 @@ const categoryData = [
   },
   {
     id: 4,
-    name: 'Salads',
-    icon: icons.salad,
-  },
-  {
-    id: 5,
-    name: 'Burgers',
-    icon: icons.hamburger,
-  },
-  {
-    id: 6,
-    name: 'Pizza',
-    icon: icons.pizza,
-  },
-  {
-    id: 7,
-    name: 'Snacks',
-    icon: icons.fries,
-  },
-  {
-    id: 8,
     name: 'Sushi',
     icon: icons.sushi,
   },
   {
-    id: 9,
-    name: 'Desserts',
-    icon: icons.donut,
+    id: 5,
+    name: 'Noodles',
+    icon: icons.noodle,
   },
   {
-    id: 10,
-    name: 'Drinks',
-    icon: icons.drink,
+    id: 6,
+    name: 'Desserts',
+    icon: icons.donut,
   },
 ];
 
@@ -226,9 +306,9 @@ const expensive = 3;
 const restaurantData = [
   {
     id: 1,
-    name: 'ByProgrammers Burger',
+    name: '태현 버거',
     rating: 4.8,
-    categories: [5, 7],
+    categories: [1],
     priceRating: affordable,
     photo: images.burger_restaurant_1,
     duration: '30 - 45 min',
@@ -269,9 +349,9 @@ const restaurantData = [
   },
   {
     id: 2,
-    name: 'ByProgrammers Pizza',
+    name: '세원 피자',
     rating: 4.8,
-    categories: [2, 4, 6],
+    categories: [2],
     priceRating: expensive,
     photo: images.pizza_restaurant,
     duration: '15 - 20 min',
@@ -321,7 +401,7 @@ const restaurantData = [
   },
   {
     id: 3,
-    name: 'ByProgrammers Hotdogs',
+    name: '문주 핫도그',
     rating: 4.8,
     categories: [3],
     priceRating: expensive,
@@ -349,9 +429,9 @@ const restaurantData = [
   },
   {
     id: 4,
-    name: 'ByProgrammers Sushi',
+    name: '혜수시',
     rating: 4.8,
-    categories: [8],
+    categories: [4],
     priceRating: expensive,
     photo: images.japanese_restaurant,
     duration: '10 - 15 min',
@@ -376,9 +456,9 @@ const restaurantData = [
   },
   {
     id: 5,
-    name: 'ByProgrammers Cuisine',
+    name: '상혁 누들',
     rating: 4.8,
-    categories: [1, 2],
+    categories: [5],
     priceRating: affordable,
     photo: images.noodle_shop,
     duration: '15 - 20 min',
@@ -427,9 +507,9 @@ const restaurantData = [
   },
   {
     id: 6,
-    name: 'ByProgrammers Dessets',
+    name: '디저트',
     rating: 4.9,
-    categories: [9, 10],
+    categories: [6],
     priceRating: affordable,
     photo: images.kek_lapis_shop,
     duration: '35 - 40 min',
