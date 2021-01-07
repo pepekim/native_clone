@@ -12,12 +12,6 @@ import {
 
 import {icons, COLORS, SIZES, FONTS} from '../constants';
 
-// onPress={() =>
-//   navigation.navigate('Restaurant', {
-//     item,
-//     currentLocation,
-//   })
-
 const Restaurant = ({route, navigation}) => {
   const scrollX = new Animated.Value(0);
   const [restaurant, setRestaurant] = useState(null);
@@ -313,6 +307,7 @@ const Restaurant = ({route, navigation}) => {
                 navigation.navigate('OrderDelivery', {
                   restaurant: restaurant,
                   currentLocation: currentLocation,
+                  orderItems: orderItems,
                 })
               }>
               <Text style={{color: COLORS.white, ...FONTS.h2}}>Order</Text>
