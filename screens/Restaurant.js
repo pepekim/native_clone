@@ -10,7 +10,6 @@ import {
   Animated,
 } from 'react-native';
 import Modal from 'react-native-modal';
-import Carousel from 'react-native-snap-carousel';
 
 import {icons, COLORS, SIZES, FONTS} from '../constants';
 
@@ -75,6 +74,10 @@ const Restaurant = ({route, navigation}) => {
 
   const sumOrder = () => {
     let total = orderItems.reduce((a, b) => a + (b.total || 0), 0);
+
+    if (total.toFixed(2) >= 100) {
+      alert('잔액이 부족합니다');
+    }
 
     return total.toFixed(2);
   };

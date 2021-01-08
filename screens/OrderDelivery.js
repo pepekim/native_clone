@@ -79,7 +79,7 @@ const OrderDelivery = ({route, navigation}) => {
             origin={toLocation}
             destination={fromLocation}
             apikey={GOOGLE_API_KEY}
-            strokeWidth={5}
+            strokeWidth={1}
             strokeColor="red"
             optimizeWaypoints={true}
           />
@@ -230,10 +230,7 @@ const OrderDelivery = ({route, navigation}) => {
               alignItems: 'space-between',
             }}>
             <View style={{}}>
-              <Text style={{...FONTS.body3, marginBottom: 10}}>
-                아 또 거긴가요? 금방 갑니다
-              </Text>
-              <Text>
+              <Text style={{...FONTS.h2, marginBottom: 10}}>
                 {orderItems?.qty}개 총 ${orderItems?.total} 입니다
               </Text>
             </View>
