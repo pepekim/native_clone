@@ -259,6 +259,7 @@ const Home = ({navigation}) => {
 
 const initialCurrentLocation = {
   streetName: '의문의 코딩공장',
+
   gps: {
     latitude: 1.5496614931250685,
     longitude: 110.36381866919922,

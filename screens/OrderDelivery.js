@@ -15,9 +15,8 @@ import {
 
 const OrderDelivery = ({route, navigation}) => {
   const mapView = useRef();
-
-  const [restaurant, setRestaurant] = useState(null);
   const [orderItems, setOrderItems] = useState(null);
+  const [restaurant, setRestaurant] = useState(null);
   const [streetName, setStreetName] = useState('');
   const [fromLocation, setFromLocation] = useState(null);
   const [toLocation, setToLocation] = useState(null);
@@ -41,11 +40,10 @@ const OrderDelivery = ({route, navigation}) => {
     setFromLocation(fromLoc);
     setToLocation(toLoc);
     setRegion(mapRegion);
-
-    setOrderItems(orderItems);
+    setOrderItems(orderItems[0]);
   }, []);
 
-  console.log('>>>>>>>>>>>>>>>>', orderItems);
+  console.log(fromLocation, toLocation);
 
   const zoomIn = () => {
     let newRegion = {
@@ -210,6 +208,7 @@ const OrderDelivery = ({route, navigation}) => {
               <View
                 style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                 <Text style={{...FONTS.h4}}>{restaurant?.name} 사장님</Text>
+
                 <View
                   style={{
                     flexDirection: 'row',
@@ -235,7 +234,15 @@ const OrderDelivery = ({route, navigation}) => {
               flexDirection: 'row',
               alignItems: 'space-between',
             }}>
-            <Text style={{...FONTS.body2}}>야코리아요? 금방 갑니다</Text>
+            <View style={{}}>
+              <Text style={{...FONTS.body3, marginBottom: 10}}>
+                아 또 거긴가요? 금방 갑니다
+              </Text>
+              <Text>
+                {orderItems?.qty}개 총 ${orderItems?.total} 입니다
+              </Text>
+            </View>
+
             <TouchableOpacity
               style={{
                 width: 100,
@@ -244,7 +251,7 @@ const OrderDelivery = ({route, navigation}) => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 borderRadius: 10,
-                marginLeft: 40,
+                marginLeft: 60,
               }}
               onPress={() => navigation.navigate('Home')}>
               <Text>Cancel</Text>
