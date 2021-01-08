@@ -70,14 +70,11 @@ const Restaurant = ({route, navigation}) => {
   const getBasketItemCount = () => {
     let itemCount = orderItems.reduce((a, b) => a + (b.qty || 0), 0);
 
-    () => setQuantity(itemCount);
-
     return itemCount;
   };
 
   const sumOrder = () => {
     let total = orderItems.reduce((a, b) => a + (b.total || 0), 0);
-    () => setPrice(total.toFixed(2));
 
     return total.toFixed(2);
   };

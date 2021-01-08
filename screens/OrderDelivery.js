@@ -43,8 +43,6 @@ const OrderDelivery = ({route, navigation}) => {
     setOrderItems(orderItems[0]);
   }, []);
 
-  console.log(fromLocation, toLocation);
-
   const zoomIn = () => {
     let newRegion = {
       latitude: region.latitude,
@@ -78,14 +76,14 @@ const OrderDelivery = ({route, navigation}) => {
           initialRegion={region}
           style={{flex: 1}}>
           <MapViewDirections
-            origin={fromLocation}
-            destination={toLocation}
+            origin={toLocation}
+            destination={fromLocation}
             apikey={GOOGLE_API_KEY}
             strokeWidth={5}
-            strokeColor={COLORS.primary}
+            strokeColor="red"
             optimizeWaypoints={true}
           />
-          <Marker coordinate={toLocation}>
+          <Marker coordinate={fromLocation}>
             <View
               style={{
                 height: 40,
@@ -115,10 +113,7 @@ const OrderDelivery = ({route, navigation}) => {
               </View>
             </View>
           </Marker>
-          <Marker
-            coordinate={fromLocation}
-            anchor={{x: 0.5, y: 0.5}}
-            flat={true}>
+          <Marker coordinate={toLocation} anchor={{x: 0.5, y: 0.5}} flat={true}>
             <Image
               source={icons.car}
               style={{
